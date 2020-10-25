@@ -1,2 +1,2 @@
-aeromus@gmail.com useename
-pass 12345
+dashboard panel aeromus@gmail.com user name pass 12345
+userpanel aerosolutions@gmail.com pass 12345
