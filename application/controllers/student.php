@@ -9,9 +9,9 @@ class student extends framework{
     public function index(){
         $this->view("student/dashboard");
     }
-    public function registration(){
+    public function registration($id){
         $myModel=$this->model("userModel");
-        $this->view2("student/registration",$myModel);
+        $this->view2("student/registration",$myModel,[$id]);
     }
     public function registration_list(){
         $myModel=$this->model("userModel");
@@ -83,6 +83,7 @@ class student extends framework{
         if(!isset($_POST["student_name"])){$this->redirect("student/registration");}
         if($this->input('fee_discount')==""){$disc="0";}else{$disc=trim($this->input('fee_discount'),"₹ ");}
         $userData=[
+            'id'                           =>$this->input('id'),
             'class'                       =>$this->input('class'),
             'student_name'                =>$this->input('student_name'),
             'fathers_name'                =>$this->input('fathers_name'),
@@ -106,9 +107,12 @@ class student extends framework{
             'state'                       =>$this->input('state'),
             'pincode'                     =>$this->input('pincode'),
             'landmark'                    =>$this->input('landmark'),
-            'student_photo'               =>$this->input('student_photo'),
-            'father_photo'                =>$this->input('father_photo'),
-            'mother_photo'                =>$this->input('mother_photo'),
+            // 'student_photo'               =>$this->input('student_photo'),
+            // 'father_photo'                =>$this->input('father_photo'),
+            // 'mother_photo'                =>$this->input('mother_photo'),
+            'student_photo'               =>"",
+            'father_photo'                =>"",
+            'mother_photo'                =>"",
             'remark1'                     =>$this->input('remark1'),
             'remark2'                     =>$this->input('remark2'),
             'remark3'                     =>$this->input('remark3'),
@@ -128,49 +132,63 @@ class student extends framework{
             'father_contact1_error'             =>'',
             'date_of_birth_error'               =>''
         ];
-        if($userData['class']=="0"){
-            $userData['class_error']="Class is required";
-        }
-        if(empty($userData['student_name'])){
-            $userData['student_name_error']="Student Name is required";
-        }
-        if(empty($userData['fathers_name'])){
-            $userData['fathers_name_error']="Fathers's is required";
-        }
-        if(empty($userData['father_contact1'])){
-            $userData['father_contact1_error']="Contact no. is required";
-        }
-        if(empty($userData['date_of_birth'])){
-            $userData['date_of_birth_error']="Date of Birth is required";
-        }
+        
         $myModel=$this->model("userModel");
-        if(empty($userData['class_error']) && empty($userData['student_name_error']) && empty($userData['fathers_name_error']) && empty($userData['father_contact1_error']) && empty($userData['date_of_birth_error'])){
+        // if(empty($userData['class_error']) && empty($userData['student_name_error']) && empty($userData['fathers_name_error']) && empty($userData['father_contact1_error']) && empty($userData['date_of_birth_error'])){
             
-            if(!$myModel->check_employee($userData['class'],$userData['student_name'],$userData['fathers_name'])){
-                $this->setFlash("msg","Sorry this staff is allready exist!");
-                $this->view2("student/registration",$myModel,$userData);
+        //     if(!$myModel->check_employee($userData['class'],$userData['student_name'],$userData['fathers_name'])){
+        //         $this->setFlash("msg","Sorry this staff is allready exist!");
+        //         $this->view2("student/registration",$myModel,$userData);
+        //     }
+        //     else{
+        //         $userid= '1'.rand(1000000, 9999999);
+        //         $password=password_hash("AM".rand(100000, 999999),PASSWORD_DEFAULT);
+        //         $data=[$this->getSession('userid'),$userid,$password,$userData['class'],$userData['student_name'],$userData['fathers_name'],$userData['mothers_name'],$userData['father_contact1'],$userData['father_contact2'],$userData['date_of_birth'],$userData['gender'],$userData['date_of_admition'],$userData['admition_type'],$userData['admition_scheme'],$userData['fee_category'],$userData['bus'],$userData['hostel'],$userData['library'],$userData['sms_contact_no'],$userData['student_address'],$userData['village_city'],$userData['block'],$userData['district'],$userData['state'],$userData['pincode'],$userData['landmark'],$userData['student_photo'],$userData['father_photo'],$userData['mother_photo'],$userData['remark1'],$userData['remark2'],$userData['remark3'],$userData['remark4'],"Active"];
+        //         $myData= $myModel->save_student_data($data);
+        //         if($myData){echo "Sucess";}
+        //         else{echo "fail";}
+        //         // else{
+        //         //     $myData = $myModel->students_updates([$userData['student_name'],$userData['fathers_name'],$userData['mothers_name'],$userData['father_contact1'],$userData['date_of_birth'],$userData['gender'],$userData['date_of_admition'],$userData['id']]);
+        //         //     print_r($myData); die;
+        //         //     if($myData){echo "updated";}
+        //         //     else{echo "updatefail";}
+        //         // }
+                
+        //         $myDataFee= $myModel->save_student_fee([$userid,$userData['annual_fee'],$userData['exam_fee'],$userData['sports_fee'],$userData['event_fee'],$userData['buss_fee'],$userData['hostel_fee'],$userData['fee_discount'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee']]);
+                
+        //         if($myData && $myDataFee){
+        //             $this->setFlash("msgsuc","You have succesfully registerd!");
+        //             $this->redirect("student/registration");
+        //         }
+        //         else{
+        //             $this->setFlash("msg","Somthing worng!".$myData);
+        //             $this->redirect("student/registration");
+        //         }
+        //     }
+        // }
+        if($userData['id']==""){
+            if(!$myModel->check_employee($userData['sms_contact_no'])){
+                echo "allready registerd";
             }
             else{
-                $userid= '1'.rand(1000000, 9999999);
-                $password=password_hash("AM".rand(100000, 999999),PASSWORD_DEFAULT);
-                $data=[$this->getSession('userid'),$userid,$password,$userData['class'],$userData['student_name'],$userData['fathers_name'],$userData['mothers_name'],$userData['father_contact1'],$userData['father_contact2'],$userData['date_of_birth'],$userData['gender'],$userData['date_of_admition'],$userData['admition_type'],$userData['admition_scheme'],$userData['fee_category'],$userData['bus'],$userData['hostel'],$userData['library'],$userData['sms_contact_no'],$userData['student_address'],$userData['village_city'],$userData['block'],$userData['district'],$userData['state'],$userData['pincode'],$userData['landmark'],$userData['student_photo'],$userData['father_photo'],$userData['mother_photo'],$userData['remark1'],$userData['remark2'],$userData['remark3'],$userData['remark4'],"Active"];
-                $myData= $myModel->save_student_data($data);
-                $myDataFee= $myModel->save_student_fee([$userid,$userData['annual_fee'],$userData['exam_fee'],$userData['sports_fee'],$userData['event_fee'],$userData['buss_fee'],$userData['hostel_fee'],$userData['fee_discount'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee'],$userData['monthly_fee']]);
+                $password=password_hash("54321",PASSWORD_DEFAULT);
+                $data=[$this->getSession('userid'),$userData['class'],$userData['student_name'],$userData['fathers_name'],$userData['mothers_name'],$userData['father_contact1'],$userData['father_contact2'],$userData['date_of_birth'],$userData['gender'],$userData['date_of_admition'],$userData['admition_type'],$userData['admition_scheme'],$userData['fee_category'],$userData['bus'],$userData['hostel'],$userData['library'],$userData['sms_contact_no'],$userData['student_address'],$userData['village_city'],$userData['block'],$userData['district'],$userData['state'],$userData['pincode'],$userData['landmark'],$userData['student_photo'],$userData['father_photo'],$userData['mother_photo'],$userData['remark1'],$userData['remark2'],$userData['remark3'],$userData['remark4'],"Active"];
                 
-                if($myData && $myDataFee){
-                    $this->setFlash("msgsuc","You have succesfully registerd!");
-                    $this->redirect("student/registration");
-                }
-                else{
-                    $this->setFlash("msg","Somthing worng!".$myData);
-                    $this->redirect("student/registration");
-                }
+                $myData= $myModel->save_student_data($data);
+                if($myData){echo "Sucess";}
+                else{echo "fail";}
             }
         }
         else{
-            $this->setFlash("msg","Please fill all requerd field!");
-            $this->view2("student/registration",$myModel,$userData);
+            //$myData = $myModel->students_updates([$userData['class'],$userData['student_name'],$userData['fathers_name'],$userData['mothers_name'],$userData['father_contact1'],$userData['father_contact2'],$userData['date_of_birth'],$userData['gender'],$userData['date_of_admition'],$userData['admition_type'],$userData['admition_scheme'],$userData['fee_category'],$userData['bus'],$userData['hostel'],$userData['library'],$userData['sms_contact_no'],$userData['student_address'],$userData['village_city'],$userData['block'],$userData['district'],$userData['state'],$userData['pincode'],$userData['landmark'],$userData['student_photo'],$userData['father_photo'],$userData['mother_photo'],$userData['remark1'],$userData['remark2'],$userData['remark3'],$userData['remark4'],$userData['id']]);
+            $myData = $myModel->students_updates([$userData['student_name'],$userData['fathers_name'],$userData['mothers_name'],$userData['father_contact1'],$userData['father_contact2'],$userData['date_of_birth'],$userData['gender'],$userData['date_of_admition'],$userData['admition_type'],$userData['admition_scheme'],$userData['fee_category'],$userData['bus'],$userData['hostel'],$userData['library'],$userData['sms_contact_no'],$userData['student_address'],$userData['village_city'],$userData['block'],$userData['district'],$userData['state'],$userData['pincode'],$userData['landmark'],$userData['remark1'],$userData['remark2'],$userData['remark3'],$userData['remark4'],$userData['id']]);
+            if($myData){echo "updated";}
+            else{echo "updatefail";}
         }
+        // else{
+        //     $this->setFlash("msg","Please fill all requerd field!");
+        //     $this->view2("student/registration",$myModel,$userData);
+        // }
     }
     function studentlist(){
         $myModel=$this->model("userModel");
@@ -184,27 +202,32 @@ class student extends framework{
         $myModel=$this->model("userModel");
         $this->view2("ajax/allsubjects",$myModel,['wid'=>"21",'classid'=>$this->input('classid'),'buss'=>$this->input('busf'),'hostel'=>$this->input('hostelf')]);
     }
-    public function update_profile(){
+    public function update_profile($classid){
+        $check=0;
         $myModel=$this->model("userModel");
         $id=$_POST['id'];
+        $stuname=$_POST['studentname'];
         $fname=$_POST['fathername'];
         $mothname=$_POST['mother'];
         $dob=$_POST['date_of_birth'];
         $class=$_POST['class'];
-        for($i=0;$i<sizeof($id);$i++){
-            $myModel->update_students([$fname[$i],$mothname[$i],$dob[$i],$class[$i],$id[$i]]);
-        }
 
+        for($i=0;$i<sizeof($id);$i++){
+            $myData = $myModel->update_students([$stuname[$i],$fname[$i],$mothname[$i],$dob[$i],$class[$i],$id[$i]]);
+            if(!$myData){$check=1;}
+        }
+        if($check==0){
+            $this->view2("ajax/allsubjects",$myModel,['wid'=>"13",'clasid'=>$classid,'status'=>"Active"]);
+        }
+        else{echo "fail";}
     }
     public function update_mapp(){
-
         $myModel=$this->model("userModel");
         $id=$_POST['id'];
         $dob=$_POST['date_of_birth'];
         $dobs=$_POST['date_of_births'];
         for($i=0;$i<sizeof($id);$i++){
             $myModel->update_mappings([$dob[$i],$dobs[$i],$id[$i]]);
-
         }
 
     }
@@ -217,13 +240,17 @@ class student extends framework{
         // }
     }
     public function update_contact(){
+        $check=0;
         $myModel=$this->model("userModel");
         $id=$_POST['id'];
         $mob=$_POST['mobno'];
         $mobno=$_POST['mobnum'];
         for($i=0;$i<sizeof($id);$i++){
-            $myModel->contact_updates([$mob[$i],$mobno[$i],$id[$i]]);
+            $myData = $myModel->contact_updates([$mob[$i],$mobno[$i],$id[$i]]);
+            if(!$myData){$check=1;}
         }
+        if($check==0){ echo "Sucess";}
+        else{echo "fail";}
     }
     function rollnumlist(){
         $myModel=$this->model("userModel");
@@ -241,9 +268,15 @@ class student extends framework{
         if($check==0){
             $this->view2("ajax/allsubjects",$myModel,['wid'=>"31",'clasid'=>$classid,'status'=>"Active",'rltype'=>$rltype]);
         }
-        else{
-            echo "fail";
+        else{echo "fail";}
+    }
+    public function delete_students(){
+        $myModel=$this->model("userModel");
+        $myData=$myModel->delete_sudents_records([$this->input('id')]);
+        if($myData){
+            $this->view2("ajax/allsubjects",$myModel,['wid'=>"12"]);
         }
+        else{echo "Error";}
     }
     
 }
